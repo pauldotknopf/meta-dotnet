@@ -12,6 +12,6 @@ COREFX_BUILD_MAJOR = "25316"
 COREFX_BUILD_MINOR = "01"
 # Then search for a commit by @dotnet-bot for that versions in
 # both https://github.com/dotnet/coreclr/blob/master/dependencies.props
-CORECLR_SRCREV = "36e988ee6593351f1e962118a99154df5eae0254"
+CORECLR_SRCREV = "${AUTOREV}"
 # and https://github.com/dotnet/corefx/blob/master/dependencies.props
 COREFX_SRCREV = "27d906c831b119d88f27865624a4a5d7a661c3d5"
