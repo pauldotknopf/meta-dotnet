@@ -7,34 +7,30 @@ SECTION = "devel"
 DEPENDS = "clang-native lldb libunwind gettext icu openssl util-linux cmake-native lttng-ust ca-certificates-native"
 RDEPENDS_${PN} = "libicuuc libicui18n lttng-ust"
 
-SRC_URI = "git://github.com/qmlnet/coreclr.git;branch=yocto \
-           file://0001-Allow-overriding-target-rid.patch \
+SRC_URI = "git://github.com/qmlnet/coreclr.git;nobranch=1 \
            "
 
 SRCREV = "${CORECLR_SRCREV}"
-PV = "git${SRCPV}"
 LIC_FILES_CHKSUM = "file://LICENSE.TXT;md5=9fc642ff452b28d62ab19b7eea50dfb9"
 S = "${WORKDIR}/git"
 
 include base.inc
 
-export CURL_CA_BUNDLE="${STAGING_DIR_NATIVE}/etc/ssl/certs/ca-certificates.crt"
-
-do_fix_target_name() {
-    exit 1
-	sed -i s/arm-linux-gnueabihf/${TARGET_SYS}/g ${S}/cross/arm/toolchain.cmake
-}
-
-#addtask fix_target_name after do_patch before do_configure
-
 do_compile() {
 	cd ${S}
 	unset bindir
-	YOCTO_FORCE_RID=${CORE_RUNTIME_ID} ROOTFS_DIR=${STAGING_DIR_HOST} GCC_TOOLCHAIN=${STAGING_BINDIR_TOOLCHAIN} BuildNumberMajor=${CORECLR_BUILD_MAJOR} BuildNumberMinor=${CORECLR_BUILD_MINOR} ./build.sh release cross skiptests
+	export YOCTO_CMAKE_FIND_ROOT_PATH=""
+	export CONFIG_DIR=${S}/yocto
+	export YOCTO_FORCE_RID=${CORE_RUNTIME_ID}
+	export ROOTFS_DIR=${STAGING_DIR_HOST}
+	export GCC_TOOLCHAIN=${STAGING_BINDIR_TOOLCHAIN}
+	export BuildNumberMajor=${CORECLR_BUILD_MAJOR} 
+	export BuildNumberMinor=${CORECLR_BUILD_MINOR}
+	./build.sh release cross skiptests
 }
 
 do_install() {
-	export src="${S}/bin/Product/Linux.arm.Release"
+	export src="${S}/bin/Product/Linux.x64.Release"
 	export target="${D}/opt/dotnet/"
 
 	install -d ${target}
