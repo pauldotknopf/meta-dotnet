@@ -63,6 +63,8 @@ do_install() {
 	done
 }
 
+SKIP_FILEDEPS_${PN} = "1"
+
 FILES_${PN} = "/opt/dotnet"
 FILES_${PN}-dev = "/opt/dotnet-nupkg"
 
