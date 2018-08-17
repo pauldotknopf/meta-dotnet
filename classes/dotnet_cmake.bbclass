@@ -1,5 +1,7 @@
 DEPENDS_prepend = "cmake-native "
 
+CMAKE_CONFIG_DIR="${WORKDIR}/cmake-config"
+
 # CMake expects target architectures in the format of uname(2),
 # which do not always match TARGET_ARCH, so all the necessary
 # conversions should happen here.
@@ -16,9 +18,9 @@ dotnet_cmake_do_generate_toolchain_file() {
 	fi
     #set(${ARGV0} ${ARGV1} CACHE STRING "Result from TRY_RUN" FORCE)
     marcro_set=$(echo set'(''$'{ARGV0} '$'{ARGV1} CACHE STRING '"'Result from TRY_RUN'"' FORCE')')
-    rm -rf ${WORKDIR}/cmake-config
-    mkdir ${WORKDIR}/cmake-config
-    cat > ${WORKDIR}/cmake-config/tryrun.cmake <<EOF
+    rm -rf ${CMAKE_CONFIG_DIR}
+    mkdir ${CMAKE_CONFIG_DIR}
+    cat > ${CMAKE_CONFIG_DIR}/tryrun.cmake <<EOF
 macro(set_cache_value)
   $marcro_set
 endmacro()
@@ -57,12 +59,13 @@ set_cache_value(SSCANF_SUPPORT_ll_EXITCODE 0)
 set_cache_value(UNGETC_NOT_RETURN_EOF_EXITCODE 0)
 set_cache_value(HAVE_FUNCTIONAL_PTHREAD_ROBUST_MUTEXES_EXITCODE 0)
 EOF
-	cat > ${WORKDIR}/cmake-config/toolchain.cmake <<EOF
+	cat > ${CMAKE_CONFIG_DIR}/toolchain.cmake <<EOF
 # CMake system name must be something like "Linux".
 # This is important for cross-compiling.
 $cmake_crosscompiling
 set( CMAKE_SYSTEM_NAME `echo ${TARGET_OS} | sed -e 's/^./\u&/' -e 's/^\(Linux\).*/\1/'` )
 set( CMAKE_SYSTEM_PROCESSOR ${@map_target_arch_to_uname_arch(d.getVar('TARGET_ARCH'))} )
+set( TOOLCHAIN ${TARGET_SYS} )
 
 add_compile_options(--sysroot=${STAGING_DIR_HOST})
 add_compile_options(-target ${TARGET_SYS})

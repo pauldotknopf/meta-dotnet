@@ -14,6 +14,8 @@ SRCREV = "${CORECLR_SRCREV}"
 LIC_FILES_CHKSUM = "file://LICENSE.TXT;md5=9fc642ff452b28d62ab19b7eea50dfb9"
 S = "${WORKDIR}/git"
 
+inherit dotnet_cmake
+
 include base.inc
 
 do_compile() {
@@ -26,6 +28,7 @@ do_compile() {
 	export GCC_TOOLCHAIN=${STAGING_BINDIR_TOOLCHAIN}
 	export BuildNumberMajor=${CORECLR_BUILD_MAJOR} 
 	export BuildNumberMinor=${CORECLR_BUILD_MINOR}
+	export CONFIG_DIR=${CMAKE_CONFIG_DIR}
 	./build.sh release cross skiptests
 }
 
