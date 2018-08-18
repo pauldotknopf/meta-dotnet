@@ -1,4 +1,4 @@
-CORE_SETUP_SRCREV = "yocto-${PV}"
+CORE_SETUP_SRCREV = "yocto-v${PV}"
 
 include corehost.inc
 
@@ -20,6 +20,5 @@ do_compile() {
 
 do_install() {
     install -d ${D}/opt/dotnet
-
-    cp -dr ${S}/Bin/obj/linux-x64.Release/corehost/* ${D}/opt/dotnet/
+    cp -dr ${S}/Bin/obj/linux-x64.Release/combined-framework-host/* ${D}/opt/dotnet/
 }

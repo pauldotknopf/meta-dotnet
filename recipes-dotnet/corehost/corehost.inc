@@ -17,6 +17,7 @@ inherit dotnet_cmake
 
 # Silence some QA warnings, let's not patch the build any more
 INSANE_SKIP_${PN} += "staticdev ldflags already-stripped"
+SKIP_FILEDEPS_${PN} = "1"
 
 include base.inc
 

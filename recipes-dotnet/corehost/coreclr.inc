@@ -21,8 +21,7 @@ include base.inc
 do_compile() {
 	cd ${S}
 	unset bindir
-	export YOCTO_CMAKE_FIND_ROOT_PATH=""
-	export CONFIG_DIR=${S}/yocto
+	export CONFIG_DIR=${WORKDIR}/cmake-config
 	export YOCTO_FORCE_RID=${CORE_RUNTIME_ID}
 	export ROOTFS_DIR=${STAGING_DIR_HOST}
 	export GCC_TOOLCHAIN=${STAGING_BINDIR_TOOLCHAIN}

@@ -27,14 +27,18 @@ do_configure() {
 
 do_compile() {
 	cd ${S}
+	
+	# Bitbake sets bindir ("/usr/bin") which MsBuild would happily pick up
+	# as BinDir to store the built libraries in
+	unset bindir
+
     export CONFIG_DIR=${WORKDIR}/cmake-config
 	export ROOTFS_DIR=${STAGING_DIR_HOST}
     export GCC_TOOLCHAIN=${STAGING_BINDIR_TOOLCHAIN} 
     
     ./run.sh build-native -SkipTests -release -buildArch=x64 -- verbose cross
-	# Bitbake sets bindir ("/usr/bin") which MsBuild would happily pick up
-	# as BinDir to store the built libraries in
-	unset bindir
+	
+	
 	./run.sh build-managed -BuildPackages=true -SkipTests -release -buildArch=x64 -runtimeos=linux -BuildNumberMajor=${COREFX_BUILD_MAJOR} -BuildNumberMinor=${COREFX_BUILD_MINOR}
 
 	chrpath -d bin/Linux.x64.Release/native/System.IO.Compression.Native.so
