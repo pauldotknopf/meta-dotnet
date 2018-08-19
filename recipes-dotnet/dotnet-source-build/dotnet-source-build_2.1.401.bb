@@ -29,7 +29,7 @@ do_compile() {
 	export SOURCE_BUILD_SKIP_SUBMODULE_CHECK=1
 	export ROOTFS_DIR=${STAGING_DIR_HOST}
     export CONFIG_DIR=${CMAKE_CONFIG_DIR}
-	./build.sh /p:Platform=x64 /p:Configuration=${BUILD_CONFIGURATION} /p:SkipGenerateRootFs=true
+	./build.sh /p:Platform=x64 /p:Configuration=${BUILD_CONFIGURATION} /p:SkipGenerateRootFs=true /p:RootRepo=core-setup
 }
 
 do_install() {
@@ -39,10 +39,10 @@ do_install() {
     cp -dr ${S}/src/core-setup/Bin/obj/*-x64.${BUILD_CONFIGURATION}/combined-framework-host/* ${D}${datadir}/dotnet/
     ln -sf ../share/dotnet/dotnet ${D}${bindir}/dotnet
 
-    chrpath -d ${D}${datadir}/dotnet//shared/Microsoft.NETCore.App/2.1.3/System.Security.Cryptography.Native.OpenSsl.so
-    chrpath -d ${D}${datadir}/dotnet//shared/Microsoft.NETCore.App/2.1.3/System.IO.Compression.Native.so
-    chrpath -d ${D}${datadir}/dotnet//shared/Microsoft.NETCore.App/2.1.3/System.Net.Security.Native.so
-    chrpath -d ${D}${datadir}/dotnet//shared/Microsoft.NETCore.App/2.1.3/System.Net.Http.Native.so
+    chrpath -d ${D}${datadir}/dotnet/shared/Microsoft.NETCore.App/2.1.3/System.Security.Cryptography.Native.OpenSsl.so
+    chrpath -d ${D}${datadir}/dotnet/shared/Microsoft.NETCore.App/2.1.3/System.IO.Compression.Native.so
+    chrpath -d ${D}${datadir}/dotnet/shared/Microsoft.NETCore.App/2.1.3/System.Net.Security.Native.so
+    chrpath -d ${D}${datadir}/dotnet/shared/Microsoft.NETCore.App/2.1.3/System.Net.Http.Native.so
 }
 
 FILES_${PN} = "${datadir}/dotnet ${bindir}/dotnet"
