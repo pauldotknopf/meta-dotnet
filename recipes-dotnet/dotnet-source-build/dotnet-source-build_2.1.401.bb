@@ -13,8 +13,8 @@ S = "${WORKDIR}/git"
 
 inherit dotnet_cmake
 
-DEPENDS = "clang-native lldb libunwind gettext icu openssl util-linux cmake-native lttng-ust ca-certificates-native krb5 curl"
-RDEPENDS_${PN} = "libicuuc libicui18n lttng-ust libcurl libuv libssl"
+DEPENDS = "clang-native lldb libunwind gettext icu openssl util-linux cmake-native ca-certificates-native krb5 curl"
+RDEPENDS_${PN} = "libicuuc libicui18n libcurl libuv libssl"
 
 INSANE_SKIP_${PN} += "staticdev file-rdeps textrel"
 WARN_QA_remove = "libdir"
@@ -38,6 +38,11 @@ do_install() {
 
     cp -dr ${S}/src/core-setup/Bin/obj/*-x64.${BUILD_CONFIGURATION}/combined-framework-host/* ${D}${datadir}/dotnet/
     ln -sf ../share/dotnet/dotnet ${D}${bindir}/dotnet
+
+    chrpath -d ${D}${datadir}/dotnet//shared/Microsoft.NETCore.App/2.1.3/System.Security.Cryptography.Native.OpenSsl.so
+    chrpath -d ${D}${datadir}/dotnet//shared/Microsoft.NETCore.App/2.1.3/System.IO.Compression.Native.so
+    chrpath -d ${D}${datadir}/dotnet//shared/Microsoft.NETCore.App/2.1.3/System.Net.Security.Native.so
+    chrpath -d ${D}${datadir}/dotnet//shared/Microsoft.NETCore.App/2.1.3/System.Net.Http.Native.so
 }
 
 FILES_${PN} = "${datadir}/dotnet ${bindir}/dotnet"

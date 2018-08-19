@@ -4,8 +4,8 @@ LICENSE = "MIT"
 SECTION = "devel"
 
 # lttng-ust: https://github.com/dotnet/coreclr/issues/11174
-DEPENDS = "clang-native lldb libunwind gettext icu openssl util-linux cmake-native lttng-ust ca-certificates-native"
-RDEPENDS_${PN} = "libicuuc libicui18n lttng-ust"
+DEPENDS = "clang-native lldb libunwind gettext icu openssl util-linux cmake-native ca-certificates-native"
+RDEPENDS_${PN} = "libicuuc libicui18n"
 
 SRC_URI = "git://github.com/qmlnet/coreclr.git;nobranch=1 \
            "
