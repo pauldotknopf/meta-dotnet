@@ -11,6 +11,7 @@ SRC_URI[sha256sum] = "aeaf16368ed1c455b70338c24e225a02e9616fc02e5209a2fde4f5a5d9
 
 DEPENDS += "patchelf-native"
 RDEPENDS_${PN} = "libicuuc libicui18n libcurl libuv libssl"
+RDEPENDS_${PN}_class-native = "icu-native curl-native libuv-native openssl-native"
 
 S = "${WORKDIR}/dotnet-sdk-${PV}-linux-x64"
 
@@ -40,3 +41,5 @@ do_install() {
     install -d ${D}${bindir}
     ln -s ../..${datadir}/dotnet/dotnet ${D}${bindir}/dotnet
 }
+
+BBCLASSEXTEND = "native"
