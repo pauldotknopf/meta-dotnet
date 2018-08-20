@@ -3,7 +3,7 @@ HOMEPAGE = "http://dot.net/"
 LICENSE = "MIT"
 SECTION = "devel"
 
-DEPENDS = "clang-native corefx coreclr cmake-native openssl ca-certificates-native"
+DEPENDS = "clang-native coreclr corefx cmake-native openssl ca-certificates-native"
 RDEPENDS_${PN} = "libssl libicuuc libicui18n libcurl"
 
 SRC_URI = "git://github.com/qmlnet/core-setup.git;nobranch=1 \

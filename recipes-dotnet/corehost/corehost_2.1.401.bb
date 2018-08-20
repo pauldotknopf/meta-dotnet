@@ -9,6 +9,7 @@ do_compile() {
     unset bindir
     export ROOTFS_DIR=${STAGING_DIR_HOST}
     export CONFIG_DIR=${WORKDIR}/cmake-config
+    export OverridePackageSource="${STAGING_DIR_HOST}/opt/dotnet-nupkg"
     ./build.sh \
         -ConfigurationGroup=Release \
         -TargetArchitecture=x64 \

@@ -3,8 +3,8 @@ HOMEPAGE = "http://dot.net/"
 LICENSE = "MIT"
 SECTION = "devel"
 
-DEPENDS = "clang-native coreclr libunwind gettext icu openssl util-linux cmake-native krb5 curl ca-certificates-native"
-RDEPENDS_${PN} = "coreclr libcurl libuv"
+DEPENDS = "clang-native libunwind gettext icu openssl util-linux cmake-native krb5 curl ca-certificates-native"
+RDEPENDS_${PN} = "libcurl libuv"
 
 SRC_URI = "git://github.com/qmlnet/corefx.git;nobranch=1 \
 "
