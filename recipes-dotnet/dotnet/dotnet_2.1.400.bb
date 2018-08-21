@@ -9,6 +9,8 @@ SRC_URI = "https://dotnetcli.blob.core.windows.net/dotnet/Sdk/${PV}/dotnet-sdk-$
 SRC_URI[md5sum] = "69493e47a4dfe714e8f75f6b7bf59394"
 SRC_URI[sha256sum] = "aeaf16368ed1c455b70338c24e225a02e9616fc02e5209a2fde4f5a5d9a17de7"
 
+SRC_URI_append_class-native = " file://dotnet-native"
+
 DEPENDS += "patchelf-native"
 RDEPENDS_${PN} = "libicuuc libicui18n libcurl libuv libssl"
 RDEPENDS_${PN}_class-native = "icu-native curl-native libuv-native openssl-native"
@@ -19,10 +21,9 @@ python base_do_unpack() {
     src_uri = (d.getVar('SRC_URI') or "").split()
     if len(src_uri) == 0:
         return
-
     try:
         fetcher = bb.fetch2.Fetch(src_uri, d)
-        fetcher.unpack(d.getVar('WORKDIR') + "/dotnet-sdk-" + d.getVar("PV") + "-linux-x64")
+        fetcher.unpack(d.getVar('S'))
     except bb.fetch2.BBFetchException as e:
         bb.fatal(str(e))
 }
@@ -40,6 +41,13 @@ do_install() {
 
     install -d ${D}${bindir}
     ln -s ../..${datadir}/dotnet/dotnet ${D}${bindir}/dotnet
+}
+
+do_install_append_class-native() {
+    # Use our custom dotnet script that unloads psuedo
+    rm ${D}${bindir}/dotnet
+    cp ${S}/dotnet-native ${D}${bindir}/dotnet
+    rm ${D}${datadir}/dotnet/dotnet-native
 }
 
 BBCLASSEXTEND = "native"
