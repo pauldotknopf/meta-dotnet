@@ -10,6 +10,7 @@ do_compile() {
     export ROOTFS_DIR=${STAGING_DIR_HOST}
     export CONFIG_DIR=${WORKDIR}/cmake-config
     export OverridePackageSource="${STAGING_DIR_HOST}/opt/dotnet-nupkg"
+    export StabilizePackageVersion=true
     ./build.sh \
         -ConfigurationGroup=Release \
         -TargetArchitecture=x64 \
@@ -22,4 +23,18 @@ do_compile() {
 do_install() {
     install -d ${D}/opt/dotnet
     cp -dr ${S}/Bin/obj/linux-x64.Release/combined-framework-host/* ${D}/opt/dotnet/
+
+    # ls Bin/linux-x64.Release/packages
+    install -d ${D}/opt/dotnet-nupkg/
+	for i in `ls ${S}/Bin/linux-x64.Release/packages/*.nupkg`
+	do
+		install -m 0644 ${i} ${D}/opt/dotnet-nupkg/
+	done
+}
+
+FILES_${PN} = "/opt/dotnet"
+FILES_${PN}-dev = "/opt/dotnet-nupkg"
+
+sysroot_stage_all_append () {
+    sysroot_stage_dir ${D}/opt/dotnet-nupkg ${SYSROOT_DESTDIR}/opt/dotnet-nupkg
 }
