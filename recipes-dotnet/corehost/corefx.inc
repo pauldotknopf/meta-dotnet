@@ -16,7 +16,7 @@ S = "${WORKDIR}/git"
 inherit dotnet_cmake
 
 # Install the stripped binaries, the unstripped are smaller and causes Bus error
-INSANE_SKIP_${PN} += "already-stripped dev-so"
+INSANE_SKIP_${PN} += "dev-so"
 
 include base.inc
 
@@ -40,10 +40,6 @@ do_compile() {
 	
 	
 	./run.sh build-managed -BuildPackages=true -SkipTests -release -buildArch=x64 -runtimeos=linux -BuildNumberMajor=${COREFX_BUILD_MAJOR} -BuildNumberMinor=${COREFX_BUILD_MINOR}
-
-	chrpath -d bin/Linux.x64.Release/native/System.IO.Compression.Native.so
-	chrpath -d bin/Linux.x64.Release/native/System.Net.Security.Native.so
-	chrpath -d bin/Linux.x64.Release/native/System.Net.Http.Native.so
 }
 
 do_install() {
