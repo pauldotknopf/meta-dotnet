@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 DOTNET_DIR="$(cd $DIR/../share/dotnet 2> /dev/null && pwd -P)"
-DOTNET_FILE="$DOTNET_DIR/dotnet"
-DOTNET_CLI_HOME="$DOTNET_DIR/.cli-home"
 HOME="$DOTNET_DIR/.home"
-NUGET_PACKAGES="$DOTNET_DIR/.nuget"
-PSEUDO_UNLOAD=1 env -i \
-        HOME=$HOME \
-        DOTNET_CLI_HOME=$DOTNET_CLI_HOME \
-        NUGET_PACKAGES=$NUGET_PACKAGES \
-        $DOTNET_FILE $*
+DOTNET_FILE="$DOTNET_DIR/dotnet"
+export DOTNET_CLI_HOME="$DOTNET_DIR/.cli-home"
+export NUGET_PACKAGES="$DOTNET_DIR/.nuget"
+# See https://github.com/dotnet/coreclr/issues/19682
+export COMPlus_EnableDiagnostics=0
+$DOTNET_FILE $*
+        
