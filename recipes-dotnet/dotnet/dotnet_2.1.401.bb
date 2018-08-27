@@ -41,6 +41,9 @@ do_install() {
 
     install -d ${D}${bindir}
     ln -s ../..${datadir}/dotnet/dotnet ${D}${bindir}/dotnet
+
+    # The installers delivered from Microsoft have uid of 1000.
+    chown -R root:root ${D}
 }
 
 do_install_append_class-native() {
@@ -49,5 +52,11 @@ do_install_append_class-native() {
     cp ${S}/dotnet-native ${D}${bindir}/dotnet
     rm ${D}${datadir}/dotnet/dotnet-native
 }
+
+INSANE_SKIP_${PN} += "libdir"
+INSANE_SKIP_${PN}-dev += "libdir"
+INSANE_SKIP_${PN}-dbg += "libdir"
+
+FILES_${PN}-dev += "/usr/share/dotnet/sdk"
 
 BBCLASSEXTEND = "native"
