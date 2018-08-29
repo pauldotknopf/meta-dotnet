@@ -11,7 +11,7 @@ SRC_URI[sha256sum] = "cf26fcd1938eccfa80120e917ffd9fdc4b478415d754db619d88f54e91
 
 SRC_URI_append_class-native = " file://dotnet-native"
 
-DEPENDS += "patchelf-native"
+DEPENDS += "patchelf-native jq-native"
 RDEPENDS_${PN} = "libicuuc libicui18n libcurl libuv libssl"
 RDEPENDS_${PN}_class-native = "icu-native curl-native libuv-native openssl-native"
 
@@ -35,6 +35,15 @@ do_install() {
     # Change the interpreter for all the executables.
     # The onces in the tarball are "/lib64/ld-linux-x86-64.so.2", we need "/lib/ld-linux-x86-64.so.2"
     find -type f -executable -exec sh -c "file -i '{}' | grep -q 'x-executable; charset=binary'" \; -print | xargs patchelf --set-interpreter /lib/ld-linux-x86-64.so.2
+
+    # Remove libcoreclrtraceptprovider.so
+    rm -f ${S}/shared/Microsoft.NETCore.App/2.1.3/libcoreclrtraceptprovider.so
+    # Remove the reference to libcoreclrtraceptprovider.so in the deps.json file.
+    rm -f ${WORKDIR}/tmp.json
+    cat ${S}/shared/Microsoft.NETCore.App/2.1.3/Microsoft.NETCore.App.deps.json | \
+      jq 'del(."targets".".NETCoreApp,Version=v2.1/linux-x64"."runtime.linux-x64.Microsoft.NETCore.App/2.1.3"."native"."runtimes/linux-x64/native/libcoreclrtraceptprovider.so")' \
+      > ${WORKDIR}/tmp.json
+    cp ${WORKDIR}/tmp.json ${S}/shared/Microsoft.NETCore.App/2.1.3/Microsoft.NETCore.App.deps.json
 
 	install -d ${D}${datadir}/dotnet
 	cp -rp ${S}/* ${D}${datadir}/dotnet
