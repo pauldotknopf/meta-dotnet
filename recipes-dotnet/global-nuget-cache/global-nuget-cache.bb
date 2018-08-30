@@ -9,5 +9,10 @@ SRC_URI += "file://Packages.csproj"
 inherit dotnetnative
 
 do_install() {
-    dotnet store --manifest ${WORKDIR}/Packages.csproj --framework netcoreapp2.1 --runtime linux-x64
+    dotnet store \
+        --skip-optimization \
+        --skip-symbols \
+        --manifest ${WORKDIR}/Packages.csproj \
+        --framework netcoreapp2.1 \
+        --runtime linux-x64
 }

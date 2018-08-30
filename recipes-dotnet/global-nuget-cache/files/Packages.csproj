@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <PackageReference Include="Qml.Net" Version="0.3.0" />
+    <PackageReference Include="Qml.Net.LinuxBinaries" Version="0.3.0" />
   </ItemGroup>
 </Project>
