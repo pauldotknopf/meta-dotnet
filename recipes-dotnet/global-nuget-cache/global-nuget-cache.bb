@@ -9,10 +9,16 @@ SRC_URI += "file://Packages.csproj"
 inherit dotnetnative
 
 do_install() {
+    install -d ${D}/opt/nuget
+
     dotnet store \
         --skip-optimization \
         --skip-symbols \
+        --output ${D}/opt/nuget \
         --manifest ${WORKDIR}/Packages.csproj \
         --framework netcoreapp2.1 \
-        --runtime linux-x64
+        --runtime linux-x64 \
+        --verbosity diag
 }
+
+FILES_${PN} += "/opt/nuget"
