@@ -84,6 +84,7 @@ set( CMAKE_SKIP_RPATH ON CACHE BOOL "SKIP_RPATH" )
 # Disable event tracing.
 # See https://github.com/dotnet/coreclr/issues/15693
 set( FEATURE_EVENT_TRACE 0 )
+set( FEATURE_PERFTRACING 0 )
 
 # Use native cmake modules
 list(APPEND CMAKE_MODULE_PATH "${STAGING_DATADIR}/cmake/Modules/")
