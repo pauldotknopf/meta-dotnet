@@ -35,11 +35,11 @@ do_compile() {
     export CONFIG_DIR=${WORKDIR}/cmake-config
 	export ROOTFS_DIR=${STAGING_DIR_HOST}
     export GCC_TOOLCHAIN=${STAGING_BINDIR_TOOLCHAIN} 
-    
+    export BuildNumberMajor=22222
+	export BuildNumberMinor=22
+
     ./run.sh build-native -SkipTests -release -buildArch=x64 -- verbose cross
-	
-	
-	./run.sh build-managed -BuildPackages=true -SkipTests -release -buildArch=x64 -runtimeos=linux -BuildNumberMajor=${COREFX_BUILD_MAJOR} -BuildNumberMinor=${COREFX_BUILD_MINOR}
+	./run.sh build-managed -BuildPackages=true -SkipTests -release -buildArch=x64 -runtimeos=linux
 }
 
 do_install() {

@@ -25,8 +25,8 @@ do_compile() {
 	export YOCTO_FORCE_RID=${CORE_RUNTIME_ID}
 	export ROOTFS_DIR=${STAGING_DIR_HOST}
 	export GCC_TOOLCHAIN=${STAGING_BINDIR_TOOLCHAIN}
-	export BuildNumberMajor=${CORECLR_BUILD_MAJOR} 
-	export BuildNumberMinor=${CORECLR_BUILD_MINOR}
+	export BuildNumberMajor=22222
+	export BuildNumberMinor=22
 	export CONFIG_DIR=${CMAKE_CONFIG_DIR}
 	./build.sh release cross skiptests
 }
