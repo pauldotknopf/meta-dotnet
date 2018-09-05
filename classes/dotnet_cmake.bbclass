@@ -1,26 +1,53 @@
-DEPENDS_prepend = "cmake-native "
+OECMAKE_C_COMPILER = "clang"
+OECMAKE_CXX_COMPILER ?= "clang"
+# Inherit from cmake.bbclass to use the existing functionality.
+inherit cmake
 
 CMAKE_CONFIG_DIR="${WORKDIR}/cmake-config"
 
-# CMake expects target architectures in the format of uname(2),
-# which do not always match TARGET_ARCH, so all the necessary
-# conversions should happen here.
-def map_target_arch_to_uname_arch(target_arch):
-    if target_arch == "powerpc":
-        return "ppc"
-    if target_arch == "powerpc64":
-        return "ppc64"
-    return target_arch
+python() {
+    # Prevent progress output
+    d.delVarFlag("do_compile", "progress")
+}
 
-dotnet_cmake_do_generate_toolchain_file() {
-	if [ "${BUILD_SYS}" = "${HOST_SYS}" ]; then
-		cmake_crosscompiling="set( CMAKE_CROSSCOMPILING FALSE )"
-	fi
-    #set(${ARGV0} ${ARGV1} CACHE STRING "Result from TRY_RUN" FORCE)
-    marcro_set=$(echo set'(''$'{ARGV0} '$'{ARGV1} CACHE STRING '"'Result from TRY_RUN'"' FORCE')')
+dotnet_cmake_do_configure() {
+    echo 'empty'
+}
+
+dotnet_cmake_do_compile()  {
+	echo 'empty'
+}
+
+dotnet_cmake_do_install() {
+	echo 'empty'
+}
+
+dotnet_cmake_do_generate_toolchain_config_dir() {
     rm -rf ${CMAKE_CONFIG_DIR}
     mkdir ${CMAKE_CONFIG_DIR}
-    cat > ${CMAKE_CONFIG_DIR}/tryrun.cmake <<EOF
+
+    # Move over the generated toolchain file.
+    cp ${WORKDIR}/toolchain.cmake ${CMAKE_CONFIG_DIR}/toolchain.cmake
+    # Disable event tracing.
+    # See https://github.com/dotnet/coreclr/issues/15693
+    echo "set( FEATURE_EVENT_TRACE 0 )" >> ${CMAKE_CONFIG_DIR}/toolchain.cmake
+    echo "set( FEATURE_PERFTRACING 0 )" >> ${CMAKE_CONFIG_DIR}/toolchain.cmake
+    echo "set( TOOLCHAIN ${TARGET_SYS} )" >> ${CMAKE_CONFIG_DIR}/toolchain.cmake
+    #echo "add_compile_options(--sysroot=${STAGING_DIR_HOST})" >> ${CMAKE_CONFIG_DIR}/toolchain.cmake
+    #echo "add_compile_options(-target ${TARGET_SYS})" >> ${CMAKE_CONFIG_DIR}/toolchain.cmake
+    sed -i '/set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY )/c\set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH )' ${CMAKE_CONFIG_DIR}/toolchain.cmake
+
+    #set( CMAKE_C_COMPILER x86_64-poky-linux-gcc )
+    #set( CMAKE_CXX_COMPILER x86_64-poky-linux-g++ )
+    #set( CMAKE_ASM_COMPILER x86_64-poky-linux-gcc )
+
+    # Create a tryrun.cmake.
+    # If this is a native (non-cross) build, leave it empty.
+    if [ "${BUILD_SYS}" = "${HOST_SYS}" ]; then
+        touch ${CMAKE_CONFIG_DIR}/tryrun.cmake
+    else
+        marcro_set=$(echo set'(''$'{ARGV0} '$'{ARGV1} CACHE STRING '"'Result from TRY_RUN'"' FORCE')')
+        cat > ${CMAKE_CONFIG_DIR}/tryrun.cmake <<EOF
 macro(set_cache_value)
   $marcro_set
 endmacro()
@@ -59,42 +86,9 @@ set_cache_value(SSCANF_SUPPORT_ll_EXITCODE 0)
 set_cache_value(UNGETC_NOT_RETURN_EOF_EXITCODE 0)
 set_cache_value(HAVE_FUNCTIONAL_PTHREAD_ROBUST_MUTEXES_EXITCODE 0)
 EOF
-	cat > ${CMAKE_CONFIG_DIR}/toolchain.cmake <<EOF
-# CMake system name must be something like "Linux".
-# This is important for cross-compiling.
-$cmake_crosscompiling
-set( CMAKE_SYSTEM_NAME `echo ${TARGET_OS} | sed -e 's/^./\u&/' -e 's/^\(Linux\).*/\1/'` )
-set( CMAKE_SYSTEM_PROCESSOR ${@map_target_arch_to_uname_arch(d.getVar('TARGET_ARCH'))} )
-set( TOOLCHAIN ${TARGET_SYS} )
-
-add_compile_options(--sysroot=${STAGING_DIR_HOST})
-add_compile_options(-target ${TARGET_SYS})
-
-# only search in the paths provided so cmake doesnt pick
-# up libraries and tools from the native build machine
-set( CMAKE_FIND_ROOT_PATH ${STAGING_DIR_HOST})
-set( CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY )
-set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH )
-set( CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY )
-set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY )
-
-set( CMAKE_SKIP_INSTALL_RPATH ON CACHE BOOL "SKIP_INSTALL_RPATH" )
-set( CMAKE_SKIP_RPATH ON CACHE BOOL "SKIP_RPATH" )
-
-# Disable event tracing.
-# See https://github.com/dotnet/coreclr/issues/15693
-set( FEATURE_EVENT_TRACE 0 )
-set( FEATURE_PERFTRACING 0 )
-
-# Use native cmake modules
-list(APPEND CMAKE_MODULE_PATH "${STAGING_DATADIR}/cmake/Modules/")
-
-# add for non /usr/lib libdir, e.g. /usr/lib64
-set( CMAKE_LIBRARY_PATH ${libdir} ${base_libdir})
-
-EOF
+    fi
 }
 
-addtask generate_toolchain_file after do_patch before do_configure
+addtask generate_toolchain_config_dir after do_generate_toolchain_file before do_configure
 
-EXPORT_FUNCTIONS do_generate_toolchain_file
+EXPORT_FUNCTIONS do_configure do_compile do_install do_generate_toolchain_config_dir
