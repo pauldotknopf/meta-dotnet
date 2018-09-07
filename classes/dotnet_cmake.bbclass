@@ -1,7 +1,7 @@
 OECMAKE_C_COMPILER = "clang"
 OECMAKE_CXX_COMPILER ?= "clang"
 # Inherit from cmake.bbclass to use the existing functionality.
-inherit cmake
+inherit cmakecustom
 
 CMAKE_CONFIG_DIR="${WORKDIR}/cmake-config"
 
