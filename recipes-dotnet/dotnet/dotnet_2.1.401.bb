@@ -29,6 +29,7 @@ python base_do_unpack() {
 }
 
 INSANE_SKIP_${PN} += "already-stripped file-rdeps staticdev libdir"
+INSANE_SKIP_${PN}-dbg += "libdir"
 INSANE_SKIP_${PN}-dev += "already-stripped file-rdeps staticdev libdir"
 SKIP_FILEDEPS_${PN} = '1'
 SKIP_FILEDEPS_${PN}-dev = '1'
