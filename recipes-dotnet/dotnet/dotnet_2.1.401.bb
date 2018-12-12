@@ -12,7 +12,7 @@ SRC_URI[sha256sum] = "cf26fcd1938eccfa80120e917ffd9fdc4b478415d754db619d88f54e91
 SRC_URI_append_class-native = " file://dotnet-native"
 
 DEPENDS += "patchelf-native jq-native"
-RDEPENDS_${PN} = "libicuuc libicui18n libcurl libuv libssl"
+RDEPENDS_${PN} = "libicuuc libicui18n libcurl libuv libssl krb5"
 RDEPENDS_${PN}_class-native = "icu-native curl-native libuv-native openssl-native"
 
 S = "${WORKDIR}/dotnet-sdk-${PV}-linux-x64"
@@ -28,13 +28,15 @@ python base_do_unpack() {
         bb.fatal(str(e))
 }
 
-INSANE_SKIP_${PN} += "already-stripped file-rdeps staticdev"
+INSANE_SKIP_${PN} += "already-stripped file-rdeps staticdev libdir"
+INSANE_SKIP_${PN}-dev += "already-stripped file-rdeps staticdev libdir"
 SKIP_FILEDEPS_${PN} = '1'
+SKIP_FILEDEPS_${PN}-dev = '1'
 
 do_install() {
     # Change the interpreter for all the executables.
     # The onces in the tarball are "/lib64/ld-linux-x86-64.so.2", we need "/lib/ld-linux-x86-64.so.2"
-    find -type f -executable -exec sh -c "file -i '{}' | grep -q 'x-executable; charset=binary'" \; -print | xargs patchelf --set-interpreter /lib/ld-linux-x86-64.so.2
+    find -type f -executable -exec sh -c "file -i '{}' | grep -q 'x-executable; charset=binary'" \; -print | xargs -L1 patchelf --set-interpreter /lib/ld-linux-x86-64.so.2
 
     # Remove libcoreclrtraceptprovider.so
     rm -f ${S}/shared/Microsoft.NETCore.App/2.1.3/libcoreclrtraceptprovider.so
@@ -61,10 +63,6 @@ do_install_append_class-native() {
     cp ${S}/dotnet-native ${D}${bindir}/dotnet
     rm ${D}${datadir}/dotnet/dotnet-native
 }
-
-INSANE_SKIP_${PN} += "libdir"
-INSANE_SKIP_${PN}-dev += "libdir"
-INSANE_SKIP_${PN}-dbg += "libdir"
 
 FILES_${PN}-dev += "/usr/share/dotnet/sdk"
 
