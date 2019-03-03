@@ -6,14 +6,14 @@ SECTION = "devel"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=42b611e7375c06a28601953626ab16cb"
 
 SRC_URI = "https://dotnetcli.blob.core.windows.net/dotnet/Sdk/${PV}/dotnet-sdk-${PV}-linux-x64.tar.gz"
-SRC_URI[md5sum] = "2b63831353bb95bb2d577c48fa8c8b63"
-SRC_URI[sha256sum] = "cf26fcd1938eccfa80120e917ffd9fdc4b478415d754db619d88f54e91767b2d"
+SRC_URI[md5sum] = "07d9d978f8a84684f3adb6c2d5952385"
+SRC_URI[sha256sum] = "d33cdcd784ed5503ab66d771cc8d28d5493bc8bbc596e4276db9856453c069e3"
 
 SRC_URI_append_class-native = " file://dotnet-native"
 
 DEPENDS += "patchelf-native jq-native"
-RDEPENDS_${PN} = "libicuuc libicui18n libcurl libuv libssl krb5"
-RDEPENDS_${PN}_class-native = "icu-native curl-native libuv-native openssl-native"
+RDEPENDS_${PN} = "libicuuc libicui18n libcurl libssl krb5"
+RDEPENDS_${PN}_class-native = "icu-native curl-native openssl-native"
 
 S = "${WORKDIR}/dotnet-sdk-${PV}-linux-x64"
 
@@ -40,13 +40,13 @@ do_install() {
     find -type f -executable -exec sh -c "file -i '{}' | grep -q 'x-executable; charset=binary'" \; -print | xargs -L1 patchelf --set-interpreter /lib/ld-linux-x86-64.so.2
 
     # Remove libcoreclrtraceptprovider.so
-    rm -f ${S}/shared/Microsoft.NETCore.App/2.1.3/libcoreclrtraceptprovider.so
+    rm -f ${S}/shared/Microsoft.NETCore.App/2.2.2/libcoreclrtraceptprovider.so
     # Remove the reference to libcoreclrtraceptprovider.so in the deps.json file.
     rm -f ${WORKDIR}/tmp.json
-    cat ${S}/shared/Microsoft.NETCore.App/2.1.3/Microsoft.NETCore.App.deps.json | \
-      jq 'del(."targets".".NETCoreApp,Version=v2.1/linux-x64"."runtime.linux-x64.Microsoft.NETCore.App/2.1.3"."native"."runtimes/linux-x64/native/libcoreclrtraceptprovider.so")' \
+    cat ${S}/shared/Microsoft.NETCore.App/2.2.2/Microsoft.NETCore.App.deps.json | \
+      jq 'del(."targets".".NETCoreApp,Version=v2.2/linux-x64"."runtime.linux-x64.Microsoft.NETCore.App/2.2.2"."native"."runtimes/linux-x64/native/libcoreclrtraceptprovider.so")' \
       > ${WORKDIR}/tmp.json
-    cp ${WORKDIR}/tmp.json ${S}/shared/Microsoft.NETCore.App/2.1.3/Microsoft.NETCore.App.deps.json
+    cp ${WORKDIR}/tmp.json ${S}/shared/Microsoft.NETCore.App/2.2.2/Microsoft.NETCore.App.deps.json
 
 	install -d ${D}${datadir}/dotnet
 	cp -rp ${S}/* ${D}${datadir}/dotnet
