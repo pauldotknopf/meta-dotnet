@@ -49,19 +49,16 @@ do_install() {
     cp ${WORKDIR}/tmp.json ${S}/shared/Microsoft.NETCore.App/2.2.2/Microsoft.NETCore.App.deps.json
 
 	install -d ${D}${datadir}/dotnet
-	cp -rp ${S}/* ${D}${datadir}/dotnet
+    cp -av --no-preserve=ownership ${S}/* ${D}${datadir}/dotnet
 
     install -d ${D}${bindir}
     ln -s ../..${datadir}/dotnet/dotnet ${D}${bindir}/dotnet
-
-    # The installers delivered from Microsoft have uid of 1000.
-    chown -R root:root ${D}
 }
 
 do_install_append_class-native() {
     # Use our custom dotnet script that unloads psuedo
     rm ${D}${bindir}/dotnet
-    cp ${S}/dotnet-native ${D}${bindir}/dotnet
+    cp -av --no-preserve=ownership ${S}/dotnet-native ${D}${bindir}/dotnet
     rm ${D}${datadir}/dotnet/dotnet-native
 }
 
